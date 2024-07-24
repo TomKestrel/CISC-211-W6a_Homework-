@@ -1,0 +1,56 @@
+
+; W6a_Homework
+; by Wootark Kim
+
+; Task: Generate English uppercase characters from A to Z. After every character, there must be a line feed. 
+; 	Use procedures and loops to optimize the code. Do not use gdb debugger. The executable file will run directly on the terminal.
+
+; the section where my code that will be read begins
+section .text
+	global _start
+
+_start:
+	xor eax, eax			; clearing out all the registers just in case non cleared registers causes problems while testing
+	xor ebx, ebx
+	xor ecx, ecx
+	xor edx, edx
+
+	mov dword [result], 0x41	; Put 0x41 into [result]. 0x41 is the hex or ASCII value for "A"		
+					; self reference: the "byte" means I am allocating 1 byte for the operation size
+					; whereas "word" means I am allocating 2 byte for the operation size 
+					; and "dword" means I am allocating 4 byte for the operation size
+
+					; Self question: why do I have to specify byte allocation here when a lack of designation defaults
+					; to 4 byte. As in isin't "mov [result], 0x41" basically means the same thing as "mov dword [result], 0x41"?
+					; Therefore, shouldn't "mov [result], 0x41" also work without producing an error?
+
+loop:
+	call write			; jump to the "write" procedure
+	mov ecx, [result]		; put [result]'s value into ecx
+	inc ecx				; increment ecx value by 1 (in this case keep incrementing the ASCII value by 1)
+	mov [result], ecx		; put the new incremented ecx value into [result]
+	cmp ecx, 0x5B			; compare ecx to 0x5B. 0x5B is the hex or ASCII value for "[" (0x5A would be the value for "Z" which is front of 0x5B)
+	jne loop;			; jump to loop until eax equals 0x5B, at which point skip the jump
+
+	mov eax, 1			; load eax with the system call number for termination (aka I want to shut down this program now)
+	int 0x80			; initiate system call
+
+write:
+	mov eax, 4			; load eax with the system call number for writing (aka I want to write data)
+	mov ebx, 1			; load ebx with the file descriptor for standard output (aka write to standard output)
+	mov ecx, newline		; load ecx with the address of the message to write (aka write starting from this address)
+	mov edx, 5			; load edx with the length of the message (aka hey when you write, just know that this is how long the data is)
+	int 0x80			; initiate system call
+	ret
+
+	; instructions for shutting down
+	mov eax, 1			; load eax with the system call number for termination (aka I want to shut down this program now)
+	int 0x80			; initiate system call
+
+; the section where I can declare and initialize my variables
+section .data
+    newline dd 0xa			; 0xa basically means "make new line" (aka \n)
+
+section .bss
+	result resb 1
+		

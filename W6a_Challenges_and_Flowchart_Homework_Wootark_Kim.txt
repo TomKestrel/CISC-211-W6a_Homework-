@@ -1,0 +1,126 @@
+W6a_Homework_Challenges
+by Wootark Kim
+
+"What were your challenges in performing the lab (from design to the implementation phases)?"
+
+My greatest challenge was trying to figure out how to store messages, not into variables, but into the registers itself
+and then have them be printed out as a statement. Originally I tried to have the alphabets be directly mov'ed into the
+registers through a stack system. This worked but I couldn't figure out a way to have them be printed out onto the terminal.
+After few hours of frustrated attempts, I've realized you cannot actually print out the raw leters that got stored.
+For example, stating "mov ecx, a" does not mean I can print out a. Instead, what I eventually learned, is that you can
+store the hex value of a letter instead. So I can say "mov ecx, 0x41" and then I can print out an "A." However, in order for
+this to work, I did have to create a new variable (in this case called newline) and then tell the assembler to start writing
+from that variable's address. My question is, why does storing the hex value of 0xa from the newline variable into ecx not
+replace the letter hex values I already had stored in ecx? I do not know. It instead prints out both of those statements
+without a problem.
+
+
+Flowchart (my general thought process from top to bottom):
+
+Originally, since the lecture materials mentioned push and pop, I used this data system to try and store all the 
+alphabets into a stack and then use a loop to push the alphabets out one at a time. 
+	.
+	.
+	.
+My first attempt code: 
+.............................................................................................................................................................
+; the section where my code that will be read begins
+section .text
+	global _start
+
+_start:
+	mov ebx, 26
+
+	mov ecx, 'A'
+	push ecx
+	mov ecx, 'B'
+	push ecx
+	mov ecx, 'C'	
+	push ecx
+	mov ecx, 'D'
+	push ecx
+	mov ecx, 'E'
+	push ecx
+	mov ecx, 'F'	
+	push ecx
+	mov ecx, 'G'
+	push ecx
+	mov ecx, 'H'
+	push ecx
+	mov ecx, 'I'	
+	push ecx
+	mov ecx, 'J'
+	push ecx
+	mov ecx, 'K'
+	push ecx
+	mov ecx, 'L'
+	push ecx
+	mov ecx, 'M'
+	push ecx
+	mov ecx, 'N'
+	push ecx
+	mov ecx, 'O'
+	push ecx
+	mov ecx, 'P'
+	push ecx
+	mov ecx, 'Q'
+	push ecx
+	mov ecx, 'R'
+	push ecx
+	mov ecx, 'S'
+	push ecx
+	mov ecx, 'T'
+	push ecx
+	mov ecx, 'U'
+	push ecx
+	mov ecx, 'V'
+	push ecx
+	mov ecx, 'W'
+	push ecx
+	mov ecx, 'X'
+	push ecx
+	mov ecx, 'Y'
+	push ecx
+	mov ecx, 'Z'
+	push ecx
+	
+loop_print:
+	pop ecx
+
+	mov eax, 4		;load eax with the system call number for writing (aka I want to write data)
+	mov ebx, 1		;load ebx with the file descriptor for standard output (aka write to standard output)
+	mov edx, 1		;load edx with the length of the message (aka hey when you write, just know that this is how long the data is)
+	int 0x80		;instruction to make the system call (aka start the code)
+
+	dec ebx
+	cmp ebx, 0
+	jg loop_print
+
+	; instructions for shutting down
+	xor ebx, ebx
+	mov eax, 1		;load eax with the system call number 1 (prepare to shut down)
+	int 0x80		;instruction to make the system call
+.............................................................................................................................................................
+	.
+	.
+	.
+While this ran without errors, I did not see any alphabets printed out in the terminal.
+	.
+	.	
+	.
+I then tried to figure out a way to have them be shown on the terminal
+	.
+	.
+	.
+Eventually I learned that you can stored the hex values directly into the register. I can then increment that hex values and it will equate to each of the 
+alphabetical letters 
+	.
+	.
+	.
+Then I had a hardtime on configuring how to print it out with a new line command. Apparently doing "newline dd 0xa" and then also using the "mov ecx, newline"
+command solved this. I do not know why since in my head it seems like "mov ecx, newline" would mean replacing whatever letter hex values were in ecx with the 
+newline command.
+
+
+
+
